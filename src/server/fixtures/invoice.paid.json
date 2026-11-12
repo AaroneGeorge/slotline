@@ -1,0 +1,33 @@
+{
+  "id": "{{eventId}}",
+  "event_version": "1.0",
+  "create_time": "{{now}}",
+  "resource_type": "invoices",
+  "event_type": "INVOICING.INVOICE.PAID",
+  "summary": "An invoice was paid",
+  "resource": {
+    "invoice": {
+      "id": "{{invoiceId}}",
+      "status": "PAID",
+      "detail": {
+        "reference": "{{bookingId}}",
+        "currency_code": "{{currency}}",
+        "invoice_number": "{{invoiceNumber}}",
+        "invoice_date": "{{today}}"
+      },
+      "primary_recipients": [ { "billing_info": { "name": { "full_name": "{{customerName}}" } } } ],
+      "amount": { "currency_code": "{{currency}}", "value": "{{balance}}" },
+      "payments": {
+        "paid_amount": { "currency_code": "{{currency}}", "value": "{{balance}}" },
+        "transactions": [ { "payment_id": "{{paymentId}}", "method": "PAYPAL", "payment_date": "{{today}}", "amount": { "currency_code": "{{currency}}", "value": "{{balance}}" } } ]
+      },
+      "links": [
+        { "href": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{{invoiceId}}", "rel": "self", "method": "GET" }
+      ]
+    }
+  },
+  "links": [
+    { "href": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{{eventId}}", "rel": "self", "method": "GET" },
+    { "href": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{{eventId}}/resend", "rel": "resend", "method": "POST" }
+  ]
+}

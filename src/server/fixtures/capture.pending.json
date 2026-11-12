@@ -1,0 +1,29 @@
+{
+  "id": "{{eventId}}",
+  "event_version": "1.0",
+  "create_time": "{{now}}",
+  "resource_type": "capture",
+  "resource_version": "2.0",
+  "event_type": "PAYMENT.CAPTURE.PENDING",
+  "summary": "Payment pending for {{amount}} {{currency}}",
+  "resource": {
+    "id": "{{captureId}}",
+    "status": "PENDING",
+    "status_details": { "reason": "PENDING_REVIEW" },
+    "amount": { "currency_code": "{{currency}}", "value": "{{amount}}" },
+    "final_capture": true,
+    "custom_id": "{{bookingId}}",
+    "invoice_id": "{{invoiceRef}}",
+    "supplementary_data": { "related_ids": { "order_id": "{{orderId}}", "authorization_id": "{{authorizationId}}" } },
+    "create_time": "{{now}}",
+    "update_time": "{{now}}",
+    "links": [
+      { "href": "https://api-m.sandbox.paypal.com/v2/payments/captures/{{captureId}}", "rel": "self", "method": "GET" },
+      { "href": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{{authorizationId}}", "rel": "up", "method": "GET" }
+    ]
+  },
+  "links": [
+    { "href": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{{eventId}}", "rel": "self", "method": "GET" },
+    { "href": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{{eventId}}/resend", "rel": "resend", "method": "POST" }
+  ]
+}

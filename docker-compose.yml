@@ -1,0 +1,22 @@
+# docker compose up -d --build
+# Secrets come from .env.local (never baked into the image). The SQLite file lives in ./data on the host.
+# The container runs as uid 1000 (node); on Linux make ./data writable for it: mkdir -p data && sudo chown 1000:1000 data
+services:
+  slotline:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${NEXT_PUBLIC_PAYPAL_CLIENT_ID:-}
+        NEXT_PUBLIC_PAYPAL_CURRENCY: ${NEXT_PUBLIC_PAYPAL_CURRENCY:-USD}
+    image: slotline:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: .env.local
+        required: false
+    environment:
+      # PAYPAL_MODE / LLM_PROVIDER come from .env.local; unset means mock + rules (zero keys).
+      DATABASE_PATH: /app/data/slotline.db
+    volumes:
+      - ./data:/app/data

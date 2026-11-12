@@ -1,0 +1,41 @@
+# Runtime-only image from a `.next` built on the host or in CI. Use it when the machine running Docker
+# has 4 GB or less: the in-image `pnpm build` of ./Dockerfile peaks above 5 GB and is OOM-killed there.
+#
+#   pnpm install && pnpm build                 # on the host; NEXT_PUBLIC_* values are inlined now
+#   COPYFILE_DISABLE=1 tar --no-xattrs -cz --exclude .next/cache --exclude .next/dev \
+#     Dockerfile.runtime package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc next.config.ts public .next \
+#     | docker build -f Dockerfile.runtime -t slotline:latest -
+#   docker compose up -d --no-build            # runs slotline:latest with .env.local and ./data
+#
+# The tar context is needed because the repo .dockerignore (used by ./Dockerfile) excludes .next. With
+# BuildKit (docker buildx) `docker build -f Dockerfile.runtime -t slotline:latest .` also works: it reads
+# Dockerfile.runtime.dockerignore instead. See README, "Docker".
+#
+# node_modules is not copied from the host: better-sqlite3 is a native module built for the host's OS
+# and CPU. The production subset is installed here instead (light on memory; only `next build` is heavy).
+FROM node:24-bookworm-slim AS base
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
+WORKDIR /app
+
+FROM base AS deps
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile --prod
+
+FROM base AS runtime
+ENV NODE_ENV=production \
+    PORT=3000 \
+    DATABASE_PATH=/app/data/slotline.db
+COPY package.json next.config.ts ./
+COPY --from=deps /app/node_modules ./node_modules
+COPY .next ./.next
+COPY public ./public
+RUN rm -rf .next/cache .next/dev && mkdir -p /app/data && chown -R node:node /app/data
+USER node
+VOLUME ["/app/data"]
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/api/config/public').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node_modules/.bin/next", "start", "-H", "0.0.0.0", "-p", "3000"]

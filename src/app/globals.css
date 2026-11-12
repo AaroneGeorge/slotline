@@ -1,26 +1,133 @@
 @import "tailwindcss";
 
+/* Slotline tokens. Warm paper neutrals, ink-navy accent, and one reserved
+   colour per booking state (BUILD-PLAN §6). The Bryntum theme CSS is loaded
+   by the timeline component itself so /book and /evidence stay light. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --sl-bg: #f3f1ec;
+  --sl-surface: #ffffff;
+  --sl-surface-2: #f9f8f5;
+  --sl-surface-3: #efece6;
+  --sl-ink: #15181c;
+  --sl-ink-2: #464c55;
+  --sl-ink-3: #7a808a;
+  --sl-line: #e4e0d8;
+  --sl-line-2: #cfcac0;
+  --sl-accent: #1d3557;
+  --sl-accent-2: #2d4f7c;
+  --sl-paypal: #0057b8;
+
+  --st-quoted: #7d848f;
+  --st-approved: #2563d9;
+  --st-held: #178a4c;
+  --st-pending: #f1c40f;
+  --st-pending-ink: #3d3000;
+  --st-confirmed: #0b4f33;
+  --st-declined: #f08a00;
+  --st-declined-ink: #2b1700;
+  --st-disputed: #c62f2f;
+  --st-released: #9aa1aa;
+  --st-refunded: #7a62c9;
+
+  --ac-customer: #0f8a83;
+  --ac-operator: #b4531b;
+  --ac-agent: #7a3ee8;
+  --ac-system: #58616d;
+  --ac-paypal: #0057b8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--sl-bg);
+  --color-surface: var(--sl-surface);
+  --color-surface-2: var(--sl-surface-2);
+  --color-surface-3: var(--sl-surface-3);
+  --color-ink: var(--sl-ink);
+  --color-ink-2: var(--sl-ink-2);
+  --color-ink-3: var(--sl-ink-3);
+  --color-line: var(--sl-line);
+  --color-line-2: var(--sl-line-2);
+  --color-accent: var(--sl-accent);
+  --color-accent-2: var(--sl-accent-2);
+  --color-paypal: var(--sl-paypal);
+
+  --color-st-quoted: var(--st-quoted);
+  --color-st-approved: var(--st-approved);
+  --color-st-held: var(--st-held);
+  --color-st-pending: var(--st-pending);
+  --color-st-confirmed: var(--st-confirmed);
+  --color-st-declined: var(--st-declined);
+  --color-st-disputed: var(--st-disputed);
+  --color-st-released: var(--st-released);
+  --color-st-refunded: var(--st-refunded);
+
+  --color-ac-customer: var(--ac-customer);
+  --color-ac-operator: var(--ac-operator);
+  --color-ac-agent: var(--ac-agent);
+  --color-ac-system: var(--ac-system);
+  --color-ac-paypal: var(--ac-paypal);
+
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--sl-bg);
+  color: var(--sl-ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  font-feature-settings: "ss02", "tnum";
+}
+
+::selection {
+  background: color-mix(in srgb, var(--sl-accent) 22%, transparent);
+}
+
+/* thin, quiet scrollbars in the dense panels */
+.sl-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sl-line-2) transparent;
+}
+
+/* state swatches shared by pills, legend and cards */
+.sl-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+.sl-swatch-quoted { border: 1.5px dashed var(--st-quoted); background: var(--sl-surface); }
+.sl-swatch-approved { border: 2px solid var(--st-approved); background: color-mix(in srgb, var(--st-approved) 8%, white); }
+.sl-swatch-held { background: var(--st-held); }
+.sl-swatch-pending { background: var(--st-pending); }
+.sl-swatch-confirmed { background: var(--st-confirmed); }
+.sl-swatch-declined { background: repeating-linear-gradient(-45deg, var(--st-declined) 0 3px, #f7b04d 3px 5px); }
+.sl-swatch-disputed { background: var(--st-disputed); }
+.sl-swatch-released { border: 1.5px solid var(--st-released); background: transparent; }
+.sl-swatch-refunded { border: 1.5px solid var(--st-refunded); background: transparent; }
+
+@keyframes sl-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.sl-rise {
+  animation: sl-rise 0.28s ease-out both;
+}
+@keyframes sl-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.sl-pulse-dot {
+  animation: sl-pulse-dot 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sl-rise, .sl-pulse-dot { animation: none; }
+}
+
+@media print {
+  html, body { background: #fff; }
+  .sl-no-print { display: none !important; }
 }

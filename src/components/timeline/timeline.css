@@ -1,0 +1,429 @@
+/* Slotline skin for Bryntum Scheduler Pro (stockholm-light underneath).
+   State colours come from the --st-* tokens in globals.css. Every state also
+   carries an icon and a text label, so colour is never the only cue. */
+
+.slotline-timeline {
+  --b-widget-font-size: 13px;
+  --b-primary: var(--sl-accent);
+  --b-grid-header-background: var(--sl-surface-2);
+  --b-grid-cell-border-color: var(--sl-line);
+  --b-grid-header-font-weight: 600;
+  --b-sch-event-border-radius: 7px;
+  height: 100%;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.slotline-timeline .b-schedulerpro,
+.slotline-timeline .b-scheduler {
+  font-family: inherit;
+  background: var(--sl-surface);
+}
+
+.slotline-timeline .b-grid-header-text,
+.slotline-timeline .b-sch-header-text {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--sl-ink-2);
+}
+
+/* ---- resource column ---------------------------------------------------- */
+.sl-res {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.25;
+  white-space: normal;
+}
+.sl-res > i {
+  margin-top: 2px;
+  color: var(--sl-ink-3);
+  font-size: 12px;
+  width: 14px;
+}
+.sl-res-name {
+  font-weight: 600;
+  color: var(--sl-ink);
+  font-size: 13px;
+}
+.sl-res-sub {
+  font-size: 11px;
+  color: var(--sl-ink-3);
+  margin-top: 2px;
+}
+.sl-res-waitlist .sl-res-name {
+  color: var(--sl-ink-2);
+}
+.slotline-timeline .b-grid-row.sl-row-waitlist,
+.slotline-timeline .b-grid-row.sl-row-waitlist .b-grid-cell {
+  background:
+    repeating-linear-gradient(-45deg, transparent 0 7px, color-mix(in srgb, var(--sl-line) 55%, transparent) 7px 8px),
+    var(--sl-surface-2);
+}
+
+/* ---- off hours, now line, open windows ------------------------------------ */
+.slotline-timeline .b-time-ranges-body-canvas .b-sch-time-range.sl-offhours {
+  background: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--sl-line-2) 45%, transparent) 6px 7px);
+  opacity: 1;
+}
+.slotline-timeline .b-time-ranges-header-canvas .b-sch-time-range.sl-offhours {
+  display: none;
+}
+.slotline-timeline .b-sch-time-range.sl-offhours label,
+.slotline-timeline .b-sch-time-range.sl-offhours .b-sch-time-range-label {
+  display: none;
+}
+.slotline-timeline .b-sch-time-range.sl-now {
+  border-inline-start: 2px solid var(--st-disputed);
+  background: none;
+  z-index: 3;
+}
+.slotline-timeline .b-time-ranges-header-canvas .b-sch-time-range.sl-now {
+  color: #fff;
+  font-size: 10px;
+  font-family: var(--font-mono), monospace;
+}
+.slotline-timeline .b-sch-resource-time-range.sl-open {
+  background: color-mix(in srgb, var(--st-held) 4%, transparent);
+  border: 1.5px dashed color-mix(in srgb, var(--st-held) 40%, transparent);
+  border-radius: 8px;
+  color: color-mix(in srgb, var(--st-held) 75%, var(--sl-ink));
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono), monospace;
+  opacity: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 6px 8px;
+  box-sizing: border-box;
+  background-clip: padding-box;
+}
+
+/* ---- events ----------------------------------------------------------------- */
+.slotline-timeline .b-sch-event-wrap {
+  --sl-flash: var(--sl-accent);
+}
+.slotline-timeline .b-sch-event {
+  container-type: inline-size;
+  border-radius: 7px;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.04);
+  align-items: flex-start;
+  padding: 7px 6px;
+  --b-sch-event-font-weight: 500;
+}
+.slotline-timeline .b-sch-event-content {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.sl-ev {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  width: 100%;
+  line-height: 1.2;
+}
+.sl-ev-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.sl-ev-icon {
+  font-size: 11px;
+  flex: none;
+}
+.sl-ev-name,
+.sl-ev-first {
+  font-weight: 650;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.sl-ev-first {
+  display: none;
+}
+.sl-ev-amt {
+  margin-inline-start: auto;
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.9;
+  flex: none;
+}
+.sl-ev-line,
+.sl-ev-status {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.88;
+}
+.sl-ev-status {
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* narrow bars: shrink progressively, then run the name vertically */
+@container (max-width: 130px) {
+  .sl-ev-name { display: none; }
+  .sl-ev-first { display: block; }
+}
+@container (max-width: 92px) {
+  .sl-ev-amt { display: none; }
+  .sl-ev-line { white-space: normal; }
+}
+@container (max-width: 58px) {
+  .sl-ev { align-items: center; height: 100%; }
+  .sl-ev-top { flex-direction: column; gap: 6px; }
+  .sl-ev-first {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 12px;
+  }
+  .sl-ev-line,
+  .sl-ev-status { display: none; }
+}
+
+/* state palette ---------------------------------------------------------------- */
+.slotline-timeline .b-sch-event.sl-state-quoted {
+  --b-sch-event-background: color-mix(in srgb, var(--sl-surface) 70%, transparent);
+  --b-sch-event-hover-background: var(--sl-surface);
+  --b-sch-event-selected-background: var(--sl-surface);
+  --b-sch-event-color: var(--sl-ink-2);
+  --b-sch-event-border-color: var(--st-quoted);
+  --b-sch-event-border-style: dashed;
+  --b-sch-event-border-width: 1.5px;
+  --sl-flash: var(--st-quoted);
+}
+.slotline-timeline .b-sch-event.sl-state-approved {
+  --b-sch-event-background: color-mix(in srgb, var(--st-approved) 7%, var(--sl-surface));
+  --b-sch-event-hover-background: color-mix(in srgb, var(--st-approved) 12%, var(--sl-surface));
+  --b-sch-event-selected-background: color-mix(in srgb, var(--st-approved) 16%, var(--sl-surface));
+  --b-sch-event-color: color-mix(in srgb, var(--st-approved) 80%, #000);
+  --b-sch-event-border-color: var(--st-approved);
+  --b-sch-event-border-style: solid;
+  --b-sch-event-border-width: 2px;
+  --sl-flash: var(--st-approved);
+}
+.slotline-timeline .b-sch-event.sl-state-held {
+  --b-sch-event-background: var(--st-held);
+  --b-sch-event-hover-background: color-mix(in srgb, var(--st-held) 88%, #000);
+  --b-sch-event-selected-background: color-mix(in srgb, var(--st-held) 78%, #000);
+  --b-sch-event-color: #fff;
+  --b-sch-event-border-color: color-mix(in srgb, var(--st-held) 80%, #000);
+  --b-sch-event-border-style: solid;
+  --b-sch-event-border-width: 1px;
+  --sl-flash: var(--st-held);
+}
+.slotline-timeline .b-sch-event.sl-state-pending {
+  --b-sch-event-background: var(--st-pending);
+  --b-sch-event-hover-background: color-mix(in srgb, var(--st-pending) 90%, #000);
+  --b-sch-event-selected-background: color-mix(in srgb, var(--st-pending) 82%, #000);
+  --b-sch-event-color: var(--st-pending-ink);
+  --b-sch-event-border-color: color-mix(in srgb, var(--st-pending) 70%, #000);
+  --b-sch-event-border-style: solid;
+  --b-sch-event-border-width: 1px;
+  --sl-flash: var(--st-pending);
+}
+.slotline-timeline .b-sch-event.sl-state-confirmed {
+  --b-sch-event-background: var(--st-confirmed);
+  --b-sch-event-hover-background: color-mix(in srgb, var(--st-confirmed) 85%, #000);
+  --b-sch-event-selected-background: color-mix(in srgb, var(--st-confirmed) 75%, #000);
+  --b-sch-event-color: #fff;
+  --b-sch-event-border-color: color-mix(in srgb, var(--st-confirmed) 70%, #000);
+  --b-sch-event-border-style: solid;
+  --b-sch-event-border-width: 1px;
+  --sl-flash: var(--st-confirmed);
+}
+.slotline-timeline .b-sch-event.sl-state-declined {
+  --b-sch-event-background:
+    repeating-linear-gradient(-45deg, transparent 0 9px, rgb(255 255 255 / 0.16) 9px 14px), var(--st-declined);
+  --b-sch-event-hover-background:
+    repeating-linear-gradient(-45deg, transparent 0 9px, rgb(255 255 255 / 0.16) 9px 14px), color-mix(in srgb, var(--st-declined) 90%, #000);
+  --b-sch-event-selected-background: color-mix(in srgb, var(--st-declined) 82%, #000);
+  --b-sch-event-color: var(--st-declined-ink);
+  --b-sch-event-border-color: color-mix(in srgb, var(--st-declined) 65%, #000);
+  --b-sch-event-border-style: solid;
+  --b-sch-event-border-width: 1px;
+  --sl-flash: var(--st-declined);
+}
+.slotline-timeline .b-sch-event.sl-state-disputed {
+  --b-sch-event-background: var(--st-disputed);
+  --b-sch-event-hover-background: color-mix(in srgb, var(--st-disputed) 88%, #000);
+  --b-sch-event-selected-background: color-mix(in srgb, var(--st-disputed) 78%, #000);
+  --b-sch-event-color: #fff;
+  --b-sch-event-border-color: color-mix(in srgb, var(--st-disputed) 70%, #000);
+  --b-sch-event-border-style: solid;
+  --b-sch-event-border-width: 1px;
+  --sl-flash: var(--st-disputed);
+}
+.slotline-timeline .b-sch-event.sl-state-disputed::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 5px;
+  background: repeating-linear-gradient(180deg, #fff 0 4px, transparent 4px 8px);
+  opacity: 0.55;
+}
+
+/* waitlist lane: ghosts at the requested time */
+.slotline-timeline .b-sch-event.sl-waiting {
+  --b-sch-event-background: var(--sl-surface);
+  --b-sch-event-hover-background: var(--sl-surface);
+  --b-sch-event-color: var(--sl-ink-2);
+  --b-sch-event-border-color: var(--sl-line-2);
+  --b-sch-event-border-style: dashed;
+  --b-sch-event-border-width: 1.5px;
+  padding-block: 5px;
+}
+.slotline-timeline .b-sch-event.sl-waiting .sl-ev-line {
+  display: none;
+}
+
+.slotline-timeline .b-sch-event.sl-balance-paid .sl-ev-status::after {
+  content: " \2713";
+}
+
+/* Reflows should read on video. Scheduler Pro moves bars with
+   --b-sch-event-animating-transition while it animates (transitionDuration=520ms
+   on the component); that variable is resolved at :root with 0.15s, so it is
+   redefined here rather than its duration variable. */
+.slotline-timeline {
+  --sl-move: 0.45s;
+  --b-sch-event-animating-transition:
+    border var(--sl-move), border-radius var(--sl-move), background-color var(--sl-move), color var(--sl-move),
+    padding var(--sl-move), opacity var(--sl-move), inset var(--sl-move) cubic-bezier(0.2, 0.75, 0.25, 1),
+    width var(--sl-move), height var(--sl-move);
+}
+@media (prefers-reduced-motion: reduce) {
+  .slotline-timeline { --sl-move: 0s; }
+}
+
+/* a state change rings the bar once */
+.slotline-timeline .b-sch-event.sl-flash {
+  animation: sl-flash 1.6s ease-out 1;
+}
+@keyframes sl-flash {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sl-flash) 75%, transparent); transform: scale(1.03); }
+  35% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--sl-flash) 30%, transparent); transform: scale(1); }
+  100% { box-shadow: 0 0 0 12px transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slotline-timeline .b-sch-event.sl-flash { animation: none; outline: 3px solid var(--sl-flash); }
+}
+
+/* ---- floating widgets (menus, tooltips) live outside the timeline element ---- */
+.b-float-root {
+  --b-widget-font-size: 13px;
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+}
+
+/* ---- tooltip ---------------------------------------------------------------- */
+.b-tooltip:has(.sl-tip) {
+  --b-tooltip-background: var(--sl-surface);
+  max-width: 340px;
+}
+.sl-tip {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--sl-ink);
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sl-tip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+.sl-tip-state {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sl-tip-c, var(--st-quoted)) 14%, transparent);
+  color: color-mix(in srgb, var(--sl-tip-c, var(--st-quoted)) 85%, #000);
+  white-space: nowrap;
+}
+.sl-tip-quoted { --sl-tip-c: var(--st-quoted); }
+.sl-tip-approved { --sl-tip-c: var(--st-approved); }
+.sl-tip-held { --sl-tip-c: var(--st-held); }
+.sl-tip-pending { --sl-tip-c: #9c7a00; }
+.sl-tip-confirmed { --sl-tip-c: var(--st-confirmed); }
+.sl-tip-declined { --sl-tip-c: #b45f00; }
+.sl-tip-disputed { --sl-tip-c: var(--st-disputed); }
+.sl-tip-sub {
+  color: var(--sl-ink-2);
+  margin-top: -4px;
+}
+.sl-tip-money {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--sl-surface-2);
+  border: 1px solid var(--sl-line);
+}
+.sl-tip-money > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sl-tip-money span,
+.sl-tip-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sl-ink-3);
+}
+.sl-tip-money b {
+  font-family: var(--font-mono), monospace;
+  font-size: 14px;
+}
+.sl-tip-money em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--sl-ink-2);
+}
+.sl-tip-ids {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sl-tip-id {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--sl-ink-2);
+}
+.sl-tip-id code {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  color: var(--sl-paypal);
+}
+.sl-tip-muted {
+  color: var(--sl-ink-3);
+  font-style: italic;
+}
+.sl-tip-note {
+  font-size: 11px;
+  color: var(--sl-ink-2);
+  border-inline-start: 2px solid var(--sl-line-2);
+  padding-inline-start: 7px;
+}
+.sl-tip-foot {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  color: var(--sl-ink-3);
+}

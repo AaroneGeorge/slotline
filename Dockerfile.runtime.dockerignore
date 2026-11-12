@@ -1,0 +1,13 @@
+# BuildKit only (docker buildx): context filter for `docker build -f Dockerfile.runtime .`
+# Unlike .dockerignore, this one keeps the host-built .next (minus its caches).
+*
+!Dockerfile.runtime
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!.npmrc
+!next.config.ts
+!public
+!.next
+.next/cache
+.next/dev
