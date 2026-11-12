@@ -4,6 +4,27 @@ A day planner for a two-van mobile phone-repair business where **every job is a 
 
 Built for the PayPal AI Hackathon (Devpost). Sandbox only; never the live API.
 
+## For judges
+
+- **Live demo:** https://slotline.tailcdec7a.ts.net (PayPal **sandbox**, hosted until the end of judging).
+- **Logins:** the operator password, the PayPal sandbox buyer account and the dev-tools secret are in the Devpost submission's testing instructions.
+- **Operator dashboard** (`/`): Dana's board. Sign in with the operator password.
+- **Customer booking page** (`/book`): no sign-in. Pay with the PayPal sandbox buyer.
+- **Dev tools** (the **Dev** panel on the dashboard): paste the dev-tools secret to trigger a declined capture, a refund or a dispute on demand.
+- **No network?** Any page with `?demo=1` runs an in-browser simulation of the same API.
+
+**How AI is used.** When money misbehaves on a booking (declined capture, refund, dispute, late balance), Slotline asks **Claude Opus 5.5** (Anthropic API, official `@anthropic-ai/sdk`, structured output against a Zod schema) for 1–3 ranked recovery options plus customer messages. Claude only proposes. Code (`validatePlan`: the constraint solver and the booking state machine) decides what is feasible and what every amount is. Nothing runs until Dana approves one option. Approval mints a 15-minute execution grant limited to that option's bookings, actions and amounts, and every PayPal call checks the grant first. If Claude is slow, refuses or is unreachable, a deterministic rules planner takes over (logged as `planner.fallback`).
+
+**Tools used.**
+- **Claude Opus 5.5** via the Anthropic API (`@anthropic-ai/sdk`): the scheduling agent that proposes recovery plans.
+- **PayPal Server SDK** (`@paypal/paypal-server-sdk`): Orders v2 (AUTHORIZE intent), authorize, capture, void and refund.
+- **PayPal REST APIs:** Invoicing v2 (create, send, QR, reminders), Disputes and webhook signature verification.
+- **PayPal JS SDK Buttons** on the booking page.
+- **PayPal sandbox webhooks**, verified and idempotent.
+- **Bryntum Scheduler Pro** (trial): the live timeline that reflows when money state changes.
+- **Next.js 16, SQLite (better-sqlite3), Zod.**
+- **Claude Code** was used as a coding assistant while building.
+
 ## Run
 
 Requirements: Node.js 24, pnpm 11 (`corepack enable`).
@@ -83,7 +104,7 @@ browser (dashboard, /book) ── JSON + SSE ──▶ Next.js 16 route handlers
                                                │
        ┌───────────────────────────────────────┼──────────────────────────────────────┐
        ▼                                       ▼                                      ▼
-  bookings.ts / invoices.ts            webhook.ts (raw body,                 planner/ (rules | gemini | groq,
+  bookings.ts / invoices.ts            webhook.ts (raw body,                 planner/ (rules | anthropic | gemini | groq,
   (create, order, authorize,           verify, normalise)                     AI SDK 7 generateText+Output.object,
    capture, void, refund, invoice)            │                               read-only PayPal tools in sandbox)
        │   paypal/calls.ts (logged)           │                                      │
@@ -119,7 +140,7 @@ browser (dashboard, /book) ── JSON + SSE ──▶ Next.js 16 route handlers
 | Forged or unsigned webhook | 400, nothing recorded or changed, logged as `webhook.rejected`. |
 | Replayed webhook | Same event id → 200, no-op, logged as `event.duplicate`. |
 | Out-of-order webhook (e.g. capture before authorization) | Recorded, logged as `booking.illegal`, not applied. |
-| LLM down, slow (20 s) or keyless | Rules planner runs instead; logged as `planner.fallback`. |
+| LLM down, slow (`PLANNER_TIMEOUT_MS`, 45 s on the demo) or keyless | Rules planner runs instead; logged as `planner.fallback`. |
 | Model hallucinates a booking, van, time or amount | `validatePlan` marks the action infeasible (amounts always come from the booking); options without a feasible action are dropped. |
 | Schedule changed between proposal and approval | The option is re-validated at approval; newly infeasible actions are skipped and left out of the grant; a superseded plan cannot be approved (409). |
 | Grant misuse | Action type not allowed, booking not covered, amount over the remaining maximum, expired (15 min), or already used → 403, no PayPal call. |
